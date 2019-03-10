@@ -3,28 +3,43 @@ import time
 import RPi.GPIO as GPIO
 import pygame
 
-
-def isWebsiteUp(url):
+def isWebsiteUp(url, currentStatus):
+    isUp = currentStatus
     try:
         page = urllib.request.urlopen(url)
         # print (page.read())
-        if page.getcode() == 200:
-            GPIO.output(4,GPIO.HIGH)
-            pygame.mixer.music.load("/home/pi/lightson/raspberrypiprojects/audio/up.mp3")
-            pygame.mixer.music.play()
-        else:
-            pygame.mixer.music.load("/home/pi/lightson/raspberrypiprojects/audio/down.mp3")
-            pygame.mixer.music.play()
-            GPIO.output(4,GPIO.LOW)
+        if page.getcode() == 200 and not isUp:
+            isUp = True
+            handleWebsiteUp()
+        elif isUp:
+            isUp = False
+            handleWebsiteDown()
     except:
-        pygame.mixer.music.load("/home/pi/lightson/raspberrypiprojects/audio/down.mp3")
-        pygame.mixer.music.play()
-        GPIO.output(4,GPIO.LOW)
+        if isUp:
+            isUp = False
+            handleWebsiteDown()
+    return isUp
+
+
+def handleWebsiteDown():
+    playfile("/home/pi/lightson/raspberrypiprojects/audio/down.mp3")
+    GPIO.output(4, GPIO.LOW)
+
+
+def handleWebsiteUp():
+    GPIO.output(4, GPIO.HIGH)
+    playfile("/home/pi/lightson/raspberrypiprojects/audio/up.mp3")
+
 
 def periodicCheckWebsiteUp(url, sleeptime):
+    currentStatus = False
     while True:
-        print(isWebsiteUp(url))
+        isWebsiteUp(url, currentStatus)
         time.sleep(sleeptime)
+
+def playfile(filename):
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
         
 def piSetup():
     
