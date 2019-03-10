@@ -11,7 +11,7 @@ def isWebsiteUp(url, currentStatus):
         if page.getcode() == 200 and not isUp:
             isUp = True
             handleWebsiteUp()
-        elif isUp and page.getCode() != 200:
+        elif isUp and page.getcode() != 200:
             isUp = False
             handleWebsiteDown()
     except:
