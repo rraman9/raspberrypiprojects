@@ -11,7 +11,7 @@ def isWebsiteUp(url, currentStatus):
         if page.getcode() == 200 and not isUp:
             isUp = True
             handleWebsiteUp()
-        elif isUp:
+        elif isUp and page.getCode() != 200:
             isUp = False
             handleWebsiteDown()
     except:
@@ -34,7 +34,7 @@ def handleWebsiteUp():
 def periodicCheckWebsiteUp(url, sleeptime):
     currentStatus = False
     while True:
-        isWebsiteUp(url, currentStatus)
+        currentStatus = isWebsiteUp(url, currentStatus)
         time.sleep(sleeptime)
 
 def playfile(filename):
